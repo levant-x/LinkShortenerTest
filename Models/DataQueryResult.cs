@@ -9,9 +9,10 @@ namespace LinkShortener.Models
     {
         public bool IsSuccessful
         {
-            get => Errors.Length == 0;
+            get => Errors == null;
         }
 
         public string[] Errors { get; set; }
+        public object Data { get; set; }
     }
 }

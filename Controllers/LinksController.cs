@@ -15,7 +15,7 @@ namespace LinkShortener.Controllers
         IRepository repository;
 
         public LinksController(IRepository repository)
-        {            
+        {
             this.repository = repository;
         }
 
@@ -27,9 +27,13 @@ namespace LinkShortener.Controllers
             else return Redirect(linkToReroute.URL);
         }
 
-        public IActionResult Post(string url)
+        public IActionResult Post()
         {
-            return Ok("URL posted!");
+            string url = new System.IO.StreamReader(Request.Body).ReadToEnd();
+            var linksManager = new LinksManager(repository);
+            var actionRes = linksManager.ShortenURL(url);
+            if (!actionRes.IsSuccessful) return BadRequest(new JsonResult(actionRes.Errors));
+            else return Ok(new JsonResult(actionRes.Data));
         }
     }
 }
