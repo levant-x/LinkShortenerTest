@@ -26,5 +26,10 @@ namespace LinkShortener.Controllers
             if (linkToReroute == null) return BadRequest("Invalid link");
             else return Redirect(linkToReroute.URL);
         }
+
+        public IActionResult Post(string url)
+        {
+            return Ok("URL posted!");
+        }
     }
 }
