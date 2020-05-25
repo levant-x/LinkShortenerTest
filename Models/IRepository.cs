@@ -8,7 +8,7 @@ namespace LinkShortener.Models
     public interface IRepository
     {
         IDataCollection<LinkModel> Links { get; }
-        IDataCollection<UserModel> Users { get; }
-        DataQueryResult SaveChanges();
+        IDataCollection<UserBaseModel> Users { get; }
+        QueryResult SaveChanges();
     }
 }

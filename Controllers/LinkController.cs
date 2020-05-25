@@ -11,13 +11,11 @@ namespace LinkShortener.Controllers
 {
     [Route("/")]
     [ApiController]
-    public class LinkController : ControllerBase
+    public class LinkController : LocalApiControllerBaseController
     {
-        IRepository repository;
-
-        public LinkController(IRepository repository)
+        public LinkController(IRepository repository) : base(repository)
         {
-            this.repository = repository;
+
         }
 
         [HttpGet("{shortURL}")]
@@ -31,12 +29,12 @@ namespace LinkShortener.Controllers
         public IActionResult Post()
         {                        
             string url = Request.ReadRawBodyString();
-            var linksManager = new LinksManager(repository);
+            var linksManager = new LinkManager(repository);
             var actionRes = linksManager.ShortenURL(url, Request.Host.ToString());      
 
             Response.ContentType = "application/json";
-            if (!actionRes.IsSuccessful) return BadRequest(new JsonResult(actionRes.Errors));
-            else return Created(Request.Path, new JsonResult(actionRes.Data));
+            if (!actionRes.IsSuccessful) return BadRequestResult(actionRes);
+            else return CreatedResult(actionRes.Data);
         }
     }
 }

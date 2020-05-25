@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LinkShortener.Models
 {
-    public class DataQueryResult
+    public class QueryResult
     {
         public bool IsSuccessful
         {

@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace LinkShortener.BLL
 {
-    public class LinksManager : ManagerBase
+    public class LinkManager : ManagerBase
     {
-        public LinksManager(IRepository repository) : base(repository)
+        public LinkManager(IRepository repository) : base(repository)
         {
 
         }
 
 
-        public DataQueryResult ShortenURL(string url, string hostName)
+        public QueryResult ShortenURL(string url, string hostName)
         {
             if (repository == null) throw new NullReferenceException("Repository is missing");
             var shortURL = string.Empty;

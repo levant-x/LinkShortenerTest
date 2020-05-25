@@ -19,27 +19,28 @@ namespace LinkShortener.DAL
         const string initLinksQuery = "SELECT * FROM Links";
         const string addLinkQuery = "AddShortLink";
 
-        DataQueryResult queryResult;
+        QueryResult queryResult;
         string queryString;
         ArrayList dataSaved;
 
         public IDataCollection<LinkModel> Links { get; protected set; }
 
-        public IDataCollection<UserModel> Users => throw new NotImplementedException();
+        public IDataCollection<UserBaseModel> Users => throw new NotImplementedException();
 
         public Repository(IConfiguration configuration)
         {
             cncStr = configuration.GetConnectionString("DefaultConnection");
-            queryResult = new DataQueryResult();
+            queryResult = new QueryResult();
             LoadData();
         }
 
-        public DataQueryResult SaveChanges()
+        public QueryResult SaveChanges()
         {
-            queryResult = new DataQueryResult();
+            queryResult = new QueryResult();
             dataSaved = new ArrayList();
             queryString = addLinkQuery;
             AddData(Links);
+            queryResult.Data = dataSaved;
             return queryResult;
         }
 

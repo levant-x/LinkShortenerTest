@@ -10,21 +10,26 @@ namespace LinkShortener.DAL
     {
         public IDataCollection<LinkModel> Links { get; private set; }
 
-        public IDataCollection<UserModel> Users => throw new NotImplementedException();
+        public IDataCollection<UserBaseModel> Users { get; private set; }
 
         public TestRepository()
         {
-
             Links = new DataCollection<LinkModel>(new LinkModel[]
             {
                 new LinkModel() { ShortURL = "123", URL = "https://www.yandex.ru" },
                 new LinkModel() { ShortURL = "456", URL = "https://www.google.com" }
             }.AsQueryable());
+
+            Users = new DataCollection<UserBaseModel>(new UserBaseModel[]
+             {
+                new UserBaseModel() { Name = "admin1", Password = "0000" },
+                new UserBaseModel() { Name = "admin2", Password = "0000" }
+             }.AsQueryable());
         }
 
-        public DataQueryResult SaveChanges()
+        public QueryResult SaveChanges()
         {
-            return new DataQueryResult();
+            return new QueryResult();
         }
     }
 }
