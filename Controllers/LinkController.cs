@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkShortener.BLL;
 using LinkShortener.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,11 @@ namespace LinkShortener.Controllers
 {
     [Route("/")]
     [ApiController]
-    public class LinksController : ControllerBase
+    public class LinkController : ControllerBase
     {
         IRepository repository;
 
-        public LinksController(IRepository repository)
+        public LinkController(IRepository repository)
         {
             this.repository = repository;
         }

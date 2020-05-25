@@ -19,8 +19,10 @@ namespace LinkShortener.DAL
         const string addLinkQuery = "AddShortLink";
         DataQueryResult transactionResult = null;
 
-        public IDataCollection<Link> Links { get; protected set; }
-        
+        public IDataCollection<LinkModel> Links { get; protected set; }
+
+        public IDataCollection<UserModel> Users => throw new NotImplementedException();
+
         public Repository(IConfiguration configuration)
         {
             cncStr = configuration.GetConnectionString("DefaultConnection");
@@ -36,24 +38,24 @@ namespace LinkShortener.DAL
         void LoadData()
         {
             var connection = new MySqlConnection(cncStr);
-            var res = TryProcessData<Link>(connection, () =>
+            var res = TryProcessData<LinkModel>(connection, () =>
             {
-                var dataQuery = connection.Query<Link>(initLinksQuery).AsQueryable();
-                Links = new DataCollection<Link>(dataQuery);
+                var dataQuery = connection.Query<LinkModel>(initLinksQuery).AsQueryable();
+                Links = new DataCollection<LinkModel>(dataQuery);
             });
             if (!res.IsSuccessful) throw new Exception(string.Join("; ", res.Errors));
         }
 
         protected DataQueryResult AddData<T>(IDataCollection<T> items)
         {
-            items.SaveAdded(SaveDataIntoDB);
+            items.SaveAdded(SaveDataItemIntoDB);
             return transactionResult;
         }
 
-        bool SaveDataIntoDB<T>(T item)
+        bool SaveDataItemIntoDB<T>(T item)
         {
             var connection = new MySqlConnection(cncStr);
-            transactionResult = TryProcessData<Link>(connection, () =>
+            transactionResult = TryProcessData<LinkModel>(connection, () =>
             {
                 item = connection.Query<T>(addLinkQuery, commandType: CommandType.StoredProcedure,
                     param: item).First();

@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LinkShortener.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LinkShortener.Models
+namespace LinkShortener.BLL
 {
-    public class LinksManager
+    public class LinksManager : ManagerBase
     {
-        IRepository repository;
-
-        public LinksManager(IRepository repository)
+        public LinksManager(IRepository repository) : base(repository)
         {
-            this.repository = repository;
+
         }
+
 
         public DataQueryResult ShortenURL(string url, string hostName)
         {
@@ -24,7 +24,7 @@ namespace LinkShortener.Models
                 shortURL = Helpers.GetAlphaNumString(Helpers.ShortURLLength);
             } while (repository.Links.FirstOrDefault(l => l.ShortURL == shortURL) != null);
 
-            var newLink = new Link() { URL = url, ShortURL = $"{hostName}/{shortURL}" };
+            var newLink = new LinkModel() { URL = url, ShortURL = $"{hostName}/{shortURL}" };
             repository.Links.AddItem(newLink);
             var res = repository.SaveChanges();
             if (res.IsSuccessful) res.Data = newLink;

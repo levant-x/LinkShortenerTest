@@ -29,7 +29,7 @@ namespace LinkShortener
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddRouting();
-            services.AddTransient<IRepository, TestRepository>();
+            services.AddTransient<IRepository, Repository>();
             //services.AddSpaStaticFiles(conf =>
             //{
             //    conf.RootPath = "ClientApp/dist";
@@ -45,7 +45,8 @@ namespace LinkShortener
             if (!env.IsDevelopment()) app.UseSpaStaticFiles();
             app.UseMvc(routes =>
             {
-                routes.MapRoute(name: "default", template: "{action=Home}/{controller=Reroute}/{shortURL}");
+            routes.MapRoute(name: "default", template: "{controller}/{action}/{params}",
+                defaults: new { controller = "Link" });
             });
 
             //app.UseSpa(spa =>

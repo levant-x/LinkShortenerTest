@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinkShortener.Models
+namespace LinkShortener.BLL
 {
     public static class Helpers
     {

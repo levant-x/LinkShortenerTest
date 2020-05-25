@@ -8,15 +8,17 @@ namespace LinkShortener.DAL
 {
     public class TestRepository : IRepository
     {
-        public IDataCollection<Link> Links { get; private set; }
+        public IDataCollection<LinkModel> Links { get; private set; }
+
+        public IDataCollection<UserModel> Users => throw new NotImplementedException();
 
         public TestRepository()
         {
 
-            Links = new DataCollection<Link>(new Link[]
+            Links = new DataCollection<LinkModel>(new LinkModel[]
             {
-                new Link() { ShortURL = "123", URL = "https://www.yandex.ru" },
-                new Link() { ShortURL = "456", URL = "https://www.google.com" }
+                new LinkModel() { ShortURL = "123", URL = "https://www.yandex.ru" },
+                new LinkModel() { ShortURL = "456", URL = "https://www.google.com" }
             }.AsQueryable());
         }
 
