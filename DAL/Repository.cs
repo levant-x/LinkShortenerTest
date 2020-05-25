@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,7 +18,10 @@ namespace LinkShortener.DAL
         string cncStr;
         const string initLinksQuery = "SELECT * FROM Links";
         const string addLinkQuery = "AddShortLink";
-        DataQueryResult transactionResult = null;
+
+        DataQueryResult queryResult;
+        string queryString;
+        ArrayList dataSaved;
 
         public IDataCollection<LinkModel> Links { get; protected set; }
 
@@ -26,46 +30,49 @@ namespace LinkShortener.DAL
         public Repository(IConfiguration configuration)
         {
             cncStr = configuration.GetConnectionString("DefaultConnection");
+            queryResult = new DataQueryResult();
             LoadData();
         }
 
         public DataQueryResult SaveChanges()
         {
-            var res = AddData(Links);
-            return res;
+            queryResult = new DataQueryResult();
+            dataSaved = new ArrayList();
+            queryString = addLinkQuery;
+            AddData(Links);
+            return queryResult;
         }
 
         void LoadData()
         {
             var connection = new MySqlConnection(cncStr);
-            var res = TryProcessData<LinkModel>(connection, () =>
+            TryProcessData<LinkModel>(connection, () =>
             {
                 var dataQuery = connection.Query<LinkModel>(initLinksQuery).AsQueryable();
                 Links = new DataCollection<LinkModel>(dataQuery);
             });
-            if (!res.IsSuccessful) throw new Exception(string.Join("; ", res.Errors));
+            if (!queryResult.IsSuccessful) throw new Exception(string.Join("; ", queryResult.Errors));
         }
 
-        protected DataQueryResult AddData<T>(IDataCollection<T> items)
+        protected void AddData<T>(IDataCollection<T> items)
         {
             items.SaveAdded(SaveDataItemIntoDB);
-            return transactionResult;
         }
 
         bool SaveDataItemIntoDB<T>(T item)
         {
             var connection = new MySqlConnection(cncStr);
-            transactionResult = TryProcessData<LinkModel>(connection, () =>
+            TryProcessData<LinkModel>(connection, () =>
             {
-                item = connection.Query<T>(addLinkQuery, commandType: CommandType.StoredProcedure,
+                item = connection.Query<T>(queryString, commandType: CommandType.StoredProcedure,
                     param: item).First();
+                dataSaved.Add(item);
             });
-            return transactionResult.IsSuccessful;
+            return queryResult.IsSuccessful;
         }
 
-        DataQueryResult TryProcessData<T>(IDbConnection connection, Action action)
+        void TryProcessData<T>(IDbConnection connection, Action action)
         {
-            var res = new DataQueryResult();
             try
             {
                 connection.Open();
@@ -73,14 +80,14 @@ namespace LinkShortener.DAL
             }
             catch (Exception e)
             {
-                res.Errors = e.Message.Split("\r\n");
+                if (queryResult.Errors == null) queryResult.Errors = e.Message.Split("\r\n");
+                else queryResult.Errors.Concat(e.Message.Split("\r\n"));
             }
             finally
             {
                 connection.Close();
                 connection.Dispose();
             }
-            return res;
         }
     }
 }

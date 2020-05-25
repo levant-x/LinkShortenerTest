@@ -27,7 +27,6 @@ namespace LinkShortener.BLL
             var newLink = new LinkModel() { URL = url, ShortURL = $"{hostName}/{shortURL}" };
             repository.Links.AddItem(newLink);
             var res = repository.SaveChanges();
-            if (res.IsSuccessful) res.Data = newLink;
             return res;
         }  
     }
