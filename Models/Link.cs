@@ -10,5 +10,6 @@ namespace LinkShortener.Models
         public int ID { get; set; }
         public string ShortURL { get; set; }
         public string URL { get; set; }
+        public DateTime Created { get; set; }
     }
 }

@@ -8,18 +8,16 @@ namespace LinkShortener.DAL
 {
     public class TestRepository : IRepository
     {
-        List<Link> links;
-        public IQueryable<Link> Links { get; }
-
+        public IDataCollection<Link> Links { get; private set; }
 
         public TestRepository()
         {
-            Links = new List<Link>()
+
+            Links = new DataCollection<Link>(new Link[]
             {
                 new Link() { ShortURL = "123", URL = "https://www.yandex.ru" },
                 new Link() { ShortURL = "456", URL = "https://www.google.com" }
-            }
-            .AsQueryable();
+            }.AsQueryable());
         }
 
         public DataQueryResult SaveChanges()

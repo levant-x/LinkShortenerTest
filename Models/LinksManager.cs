@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,20 +15,20 @@ namespace LinkShortener.Models
             this.repository = repository;
         }
 
-        public DataQueryResult ShortenURL(string url)
+        public DataQueryResult ShortenURL(string url, string hostName)
         {
-            if (repository == null) return null;
+            if (repository == null) throw new NullReferenceException("Repository is missing");
             var shortURL = string.Empty;
             do
             {
                 shortURL = Helpers.GetAlphaNumString(Helpers.ShortURLLength);
             } while (repository.Links.FirstOrDefault(l => l.ShortURL == shortURL) != null);
 
-            var newLink = new Link() { URL = url, ShortURL = shortURL };
-            repository.Links.Append(newLink);
+            var newLink = new Link() { URL = url, ShortURL = $"{hostName}/{shortURL}" };
+            repository.Links.AddItem(newLink);
             var res = repository.SaveChanges();
             if (res.IsSuccessful) res.Data = newLink;
             return res;
-        }        
+        }  
     }
 }

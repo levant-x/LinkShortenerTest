@@ -28,13 +28,14 @@ namespace LinkShortener.Controllers
         }
 
         public IActionResult Post()
-        {
+        {                        
             string url = Request.ReadRawBodyString();
             var linksManager = new LinksManager(repository);
-            var actionRes = linksManager.ShortenURL(url);
+            var actionRes = linksManager.ShortenURL(url, Request.Host.ToString());      
+
             Response.ContentType = "application/json";
             if (!actionRes.IsSuccessful) return BadRequest(new JsonResult(actionRes.Errors));
-            else return Ok(new JsonResult(actionRes.Data));
+            else return Created(Request.Path, new JsonResult(actionRes.Data));
         }
     }
 }
