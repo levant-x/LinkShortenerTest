@@ -36,11 +36,10 @@ namespace LinkShortener.Models
 
         public void SaveAdded(Func<T, bool> action)
         {
+            var itemsSaved = new Stack<T>();
             foreach (var item in itemsToAdd)
-            {
-                var res = action(item);
-                if (res) itemsToAdd.Remove(item);
-            }
+                if (action(item)) itemsSaved.Push(item);
+            while (itemsSaved.Count > 0) itemsToAdd.Remove(itemsSaved.Pop());
         }
 
         public IEnumerator<T> GetEnumerator()

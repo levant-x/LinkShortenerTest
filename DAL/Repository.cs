@@ -17,6 +17,7 @@ namespace LinkShortener.DAL
         string cncStr;
         const string initLinksQuery = "SELECT * FROM Links";
         const string addLinkQuery = "AddShortLink";
+        DataQueryResult transactionResult = null;
 
         public IDataCollection<Link> Links { get; protected set; }
         
@@ -43,15 +44,21 @@ namespace LinkShortener.DAL
             if (!res.IsSuccessful) throw new Exception(string.Join("; ", res.Errors));
         }
 
-        protected DataQueryResult AddData<T>(T item)
+        protected DataQueryResult AddData<T>(IDataCollection<T> items)
+        {
+            items.SaveAdded(SaveDataIntoDB);
+            return transactionResult;
+        }
+
+        bool SaveDataIntoDB<T>(T item)
         {
             var connection = new MySqlConnection(cncStr);
-            var res = TryProcessData<Link>(connection, () =>
+            transactionResult = TryProcessData<Link>(connection, () =>
             {
-                var rows = connection.Execute(addLinkQuery, commandType: CommandType.StoredProcedure,
-                    param: item);
+                item = connection.Query<T>(addLinkQuery, commandType: CommandType.StoredProcedure,
+                    param: item).First();
             });
-            return res;
+            return transactionResult.IsSuccessful;
         }
 
         DataQueryResult TryProcessData<T>(IDbConnection connection, Action action)
