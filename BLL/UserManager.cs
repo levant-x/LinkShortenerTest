@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
-using System.Security.Principal;
+using System.Security.Claims;
 
 namespace LinkShortener.BLL
 {
     public class UserManager : ManagerBase
     {
-        IConfiguration configuration;
-
-        public UserManager(IRepository repository, IConfiguration configuration) : base(repository)
+        public UserManager(IRepository repository) : base(repository)
         {
-            this.configuration = configuration;
+
         }
 
         public QueryResult RegisterUser(UserRegisterModel user)
@@ -32,13 +30,21 @@ namespace LinkShortener.BLL
             return res;
         }
 
+        public bool CheckPass(string password)
+        {
+            return repository.CheckUserPass(password);
+        }
+
         public string CreateAuthToken(UserBaseModel user)
         {
             var now = DateTime.UtcNow;
-            var lifetime = int.Parse(configuration.GetSection("AuthOptions")["LIFETIME"]);
-            var jwt = new JwtSecurityToken(configuration.GetSection("AuthOptions")["ISSUER"],
-                configuration.GetSection("AuthOptions")["Audience"], null, now, now.Add(TimeSpan.FromMinutes(lifetime)),
-                new SigningCredentials(Helpers.CreateSymmSecurityKey(), SecurityAlgorithms.Aes128Encryption));
+            var identity = new ClaimsIdentity(new Claim[] 
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name)
+            });
+            var jwt = new JwtSecurityToken(AuthOptions.ISSUER,
+                AuthOptions.AUDIENCE, identity.Claims, now, now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                new SigningCredentials(AuthOptions.CreateSymmSecurityKey(), SecurityAlgorithms.HmacSha256));
             var res = new JwtSecurityTokenHandler().WriteToken(jwt);
             return res;
         }

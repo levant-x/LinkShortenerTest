@@ -44,6 +44,11 @@ namespace LinkShortener.DAL
             return queryResult;
         }
 
+        public bool CheckUserPass(string password)
+        {
+            throw new NotImplementedException();
+        }
+
         void LoadData()
         {
             var connection = new MySqlConnection(cncStr);

@@ -27,8 +27,15 @@ namespace LinkShortener.DAL
              }.AsQueryable());
         }
 
+        public bool CheckUserPass(string password)
+        {
+            return Users.FirstOrDefault(u => u.Password == password) != null;
+        }
+
+
         public QueryResult SaveChanges()
         {
+            Users.SaveAdded(u => { Users.Append(u); return true; });
             return new QueryResult();
         }
     }

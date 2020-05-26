@@ -21,9 +21,9 @@ namespace LinkShortener.BLL
         }
 
 
-        protected IActionResult BadRequestResult(QueryResult result)
+        protected IActionResult BadRequestResult(object errors)
         {
-            return BadRequest(new JsonResult(result.Errors));
+            return BadRequest(new JsonResult(errors));
         }
 
         protected IActionResult CreatedResult(object dataCreated)

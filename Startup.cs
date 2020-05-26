@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkShortener.BLL;
 using LinkShortener.DAL;
 using LinkShortener.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LinkShortener
 {
@@ -29,7 +32,24 @@ namespace LinkShortener
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddRouting();
-            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IRepository, TestRepository>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateAudience = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.CreateSymmSecurityKey(),
+                        ValidateIssuerSigningKey = true
+                    };
+                });
+            services.AddAuthorization();
             //services.AddSpaStaticFiles(conf =>
             //{
             //    conf.RootPath = "ClientApp/dist";
@@ -43,10 +63,13 @@ namespace LinkShortener
             app.UseStaticFiles();
 
             if (!env.IsDevelopment()) app.UseSpaStaticFiles();
+            app.UseAuthentication();
+
             app.UseMvc(routes =>
             {
-            routes.MapRoute(name: "default", template: "{controller}/{action}/{params}",
-                defaults: new { controller = "Link" });
+                routes.MapRoute(name: "default", template: "{controller}/{action}/{args?}",
+                    defaults: new { controller = "Link" });
+                routes.MapRoute(name: "user", template: "api/{controller}/{action}/{args?}");
             });
 
             //app.UseSpa(spa =>

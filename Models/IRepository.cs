@@ -9,6 +9,7 @@ namespace LinkShortener.Models
     {
         IDataCollection<LinkModel> Links { get; }
         IDataCollection<UserBaseModel> Users { get; }
+        bool CheckUserPass(string password);
         QueryResult SaveChanges();
     }
 }
