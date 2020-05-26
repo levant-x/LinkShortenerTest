@@ -30,9 +30,9 @@ namespace LinkShortener.BLL
             return res;
         }
 
-        public bool CheckPass(string password)
+        public bool CheckPass(UserBaseModel user)
         {
-            return repository.CheckUserPass(password);
+            return repository.CheckUserPass(user);
         }
 
         public string CreateAuthToken(UserBaseModel user)

@@ -27,9 +27,9 @@ namespace LinkShortener.DAL
              }.AsQueryable());
         }
 
-        public bool CheckUserPass(string password)
+        public bool CheckUserPass(UserBaseModel user)
         {
-            return Users.FirstOrDefault(u => u.Password == password) != null;
+            return Users.FirstOrDefault(u => u.Password == user.Password) != null;
         }
 
 

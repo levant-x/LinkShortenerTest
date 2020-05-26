@@ -38,7 +38,7 @@ namespace LinkShortener.Controllers
             var existingUser = repository.Users.FirstOrDefault(u => u.Name == user.Name);
             if (existingUser == null) return BadRequestResult("User not found");            
             var manager = new UserManager(repository);
-            if (!manager.CheckPass(user.Password)) return BadRequestResult("Incorrect password");
+            if (!manager.CheckPass(user)) return BadRequestResult("Incorrect password");
 
             var tokenString = manager.CreateAuthToken(user);
             var res = new
@@ -52,8 +52,6 @@ namespace LinkShortener.Controllers
         [Authorize]
         public IActionResult Get()
         {
-            var res = new JsonResult(new UserBaseModel() { Name = User.Identity.Name });
-            return res;
             return Ok($"Your name is {User.Identity.Name}");
         }
     }
