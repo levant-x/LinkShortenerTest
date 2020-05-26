@@ -9,6 +9,7 @@ namespace LinkShortener.Models
     public class LinkModel
     {
         public int ID { get; set; }
+        public int UserID { get; set; }
         public string ShortURL { get; set; }
         public string URL { get; set; }
         public DateTime Created { get; set; }

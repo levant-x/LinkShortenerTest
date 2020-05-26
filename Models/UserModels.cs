@@ -8,6 +8,7 @@ namespace LinkShortener.Models
 {
     public class UserBaseModel
     {
+        public int ID { get; set; }
         [Required]
         [MaxLength(15, ErrorMessage = "Name length cannot exceed 15 charachters")]
         public string Name { get; set; }

@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using LinkShortener.BLL;
 using LinkShortener.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkShortener.Controllers
 {
-    [Route("/")]
+    //[Route("/")]
+    [Authorize]
     [ApiController]
     public class LinkController : LocalApiControllerBaseController
     {
@@ -18,7 +20,8 @@ namespace LinkShortener.Controllers
 
         }
 
-        [HttpGet("{shortURL}")]
+        [HttpGet("/{shortURL}")]
+        [AllowAnonymous]
         public IActionResult Get(string shortURL)
         {
             var linkToReroute = repository.Links.FirstOrDefault(link => link.ShortURL == shortURL);
@@ -26,11 +29,24 @@ namespace LinkShortener.Controllers
             else return Redirect(linkToReroute.URL);
         }
 
+        [HttpGet("/")]
+        public IActionResult Get()
+        {
+            var userID = repository.Users
+                .First(user => user.Name == User.Identity.Name).ID;
+            var userLinks = repository.Links.Where(link => link.UserID == userID);
+            return Ok(new JsonResult(userLinks));
+        }
+
+        //[HttpPost]
         public IActionResult Post()
         {                        
             string url = Request.ReadRawBodyString();
             var linksManager = new LinkManager(repository);
-            var actionRes = linksManager.ShortenURL(url, Request.Host.ToString());      
+
+            var userID = repository.Users
+                .First(user => user.Name == User.Identity.Name).ID;
+            var actionRes = linksManager.ShortenURL(url, Request.Host.ToString(), userID);      
 
             Response.ContentType = "application/json";
             if (!actionRes.IsSuccessful) return BadRequestResult(actionRes);

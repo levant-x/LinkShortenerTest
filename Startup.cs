@@ -32,7 +32,7 @@ namespace LinkShortener
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddRouting();
-            services.AddTransient<IRepository, TestRepository>();
+            services.AddTransient<IRepository, Repository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -67,9 +67,9 @@ namespace LinkShortener
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(name: "default", template: "{controller}/{action}/{args?}",
-                    defaults: new { controller = "Link" });
-                routes.MapRoute(name: "user", template: "api/{controller}/{action}/{args?}");
+                routes.MapRoute(name: "default", template: "Links/{action}");
+                routes.MapRoute(name: "main", template: "/{shortUrl}");
+                routes.MapRoute(name: "other", template: "api/{controller}/{action}/{args?}");
             });
 
             //app.UseSpa(spa =>
